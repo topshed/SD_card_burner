@@ -37,7 +37,7 @@ This image includes the desktop but only has a few additional software applicati
 Based on Debian Stretch
 """
 stretch_lite_info = """
-Stretch Lite: 
+Stretch Lite:
 A minimal image with no desktop (command line only).
 Based on Debian Stretch
 """
@@ -51,11 +51,11 @@ def execute(cmd):
     popen = subprocess.Popen(cmd, stderr=subprocess.PIPE, universal_newlines=True)
     pid = popen.pid
     print(pid)
-    for stdout_line in iter(popen.stderr.readline, ""): 
-        yield stdout_line  
-    popen.stderr.close() 
-    return_code = popen.wait() 
-    #if return_code: 
+    for stdout_line in iter(popen.stderr.readline, ""):
+        yield stdout_line
+    popen.stderr.close()
+    return_code = popen.wait()
+    #if return_code:
        # raise subprocess.CalledProcessError(return_code, cmd)
 
 
@@ -75,7 +75,7 @@ def start():
         elif p.device == "/dev/sda1" and p.fstype == "vfat":
             logger.info("Found SD card - looks like NOOBs")
             found_sd = True
-            
+
     if found_sd:
         instructions.enable()
         image_selecter.enable()
@@ -85,14 +85,14 @@ def start():
         info("Success!", "SD card detected. Please choose your operating system and then press 'Burn'")
     else:
         error("Uh oh!", "No SD card detected - please remove it and try again")
-            
-            
+
+
 def selection(choice):
     """ Sets the text for the selected  text guizero object
         Also sets the global to_be_burned variable to be the
         selected img file by calling image_map
     """
-    global to_be_burned   
+    global to_be_burned
     to_be_burned = image_map(choice)
 
 def dd_run():
@@ -103,7 +103,7 @@ def dd_run():
         completed and resets progress and status
     """
     global to_be_burned
-    
+
     progress.value = "0"
     progress.show()
     total_size = os.path.getsize(to_be_burned)
@@ -112,7 +112,7 @@ def dd_run():
         target = "/tmp/cac"
     else:
         target = "/dev/sda"
-    for path in execute(["sudo","dd", "if="+to_be_burned, "of="+target, "status=progress"]): 
+    for path in execute(["sudo","dd", "if="+to_be_burned, "of="+target, "status=progress"]):
         dd_value = path.split(" ")[0].rstrip()
         if dd_value != "" and  dd_value[-2] != "+":
             how_far = round( ( int(path.split(" ")[0].rstrip()) / int(total_size) ) *100, 1 )
@@ -122,9 +122,9 @@ def dd_run():
                 if remaining > 60:
                     progress.value = str(how_far) + "% - " + str(round(remaining/60,1)) + " mins left"
                 else:
-                    progress.value = str(how_far) + "% - " + str(int(remaining)) + " secs left"                   
+                    progress.value = str(how_far) + "% - " + str(int(remaining)) + " secs left"
             else:
-                progress.value = str(how_far) + "% - calculating time left"               
+                progress.value = str(how_far) + "% - calculating time left"
             i = int(how_far)//10
             if i > 0:
                 status.set_pixel(i-1,0,"#8cc04b")
@@ -138,7 +138,7 @@ def dd_run():
     help_button.enable()
     progress.value = ""
     status.set_all("black")
-    
+
 def abort():
     """ Kills a running dd process after offering a warning
         Reads the global pid variable and then finds the child processes
@@ -165,8 +165,8 @@ def help_close():
 
 def help_show():
     help_window.show()
-      
-    
+
+
 def burn():
     """ Starts the buring process after getting confirmation
         from the user, first by umounting any partitions
@@ -191,21 +191,22 @@ def burn():
         t = threading.Thread(target=dd_run)
         t.start()
 
- 
+
     else:
         logger.info("Chicken")
         button_start.enable()
         #text_start.enable()
-  
+
 def stop_close():
     error("Error", "Please do not try to close this window")
-    
+
 def stop_min():
     app.show()
 
- 
-    
+
+
 app = App(title="SD Card Burner",layout="grid",height=400, width=800, bg="#c51a4a")
+app.tk.attributes("-fullscreen",True)
 app.repeat(10000,stop_min)
 
 box_start = Box(app, grid = [0,1], width = 790, height = 30)
@@ -241,7 +242,7 @@ help_text3=Text(help_window, text=stretch_lite_info)
 help_text3.size=12
 help_text3.text_color="white"
 button_help_close = PushButton(help_window, command=help_close, text="Close")
-    
+
 progress = Text(box_progress,visible=True, color="#8cc04b", size=18, grid = [0,2,2,1])
 status = Waffle(box_progress, width=10, height=1, grid=[0,3,2,1], dim=30, color='black')
 
