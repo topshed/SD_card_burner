@@ -203,8 +203,6 @@ def stop_close():
 def stop_min():
     app.show()
 
-
-
 app = App(title="SD Card Burner",layout="grid",height=400, width=800, bg="#c51a4a")
 app.tk.attributes("-fullscreen",True)
 app.repeat(10000,stop_min)
